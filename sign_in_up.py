@@ -138,5 +138,5 @@ class SignInUp:
             messagebox.showerror(title="Error!", message=res_message)
 
 
-# a = SignInUp()
+a = SignInUp()
 # sadhfaskdiuasfhuwnfsajd

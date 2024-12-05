@@ -1,12 +1,14 @@
 from datetime import datetime, timedelta
 
 import pandas as pd
+import pytz
 
 import pixela_tracking as pt
 
 
 def main():
-    seven_dates = [(datetime.now().date() - timedelta(i)) for i in range(7)]
+    utc_timezone = pytz.timezone("UTC")
+    seven_dates = [(datetime.now(utc_timezone).date() - timedelta(i)) for i in range(7)]
     # print(seven_dates)
 
     all_surahs = (
@@ -22,7 +24,7 @@ def main():
     verse = current[1].values[0]
     # #print(current)
     # print(surah)
-    # print(verse)
+    print(verse)
 
     pt.update_history()
     a = pt.Tracking(dates=seven_dates, all_surah=all_surahs, current_surah=surah, current_verse=verse)

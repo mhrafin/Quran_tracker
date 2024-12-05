@@ -98,15 +98,25 @@ class Tracking:
         self.currently_on_surah_text.grid(column=3, row=2)
         self.currently_on_surah_cb.grid(column=4, row=2)
 
+
+        self.var = tk.StringVar()
         self.currently_on_verse_text = tk.Label(
             text="On Verse:", background=BACKGROUND_COLOR
         )
-        self.currently_on_verse_spinbox = tk.Spinbox(
+        self.currently_on_verse_spinbox = tk.Spinbox( textvariable=self.var,
             from_=1, to=self.all_surah[self.currently_on_surah_cb.get()], width=3
         )
+        self.var.set(current_verse)
         self.currently_on_verse_text.grid(column=3, row=3)
         self.currently_on_verse_spinbox.grid(column=4, row=3)
         # self.refresh_verse()
+        self.submit_btn = tk.Button(
+            text="Update",
+            background=BACKGROUND_COLOR,
+            activebackground=BACKGROUND_COLOR,
+            command=self.update_pressed,
+        )
+        self.submit_btn.grid(column=3, row=4, columnspan=2)
 
         self.main_win.mainloop()
 
@@ -120,6 +130,14 @@ class Tracking:
             self.currently_on_verse_spinbox.config(
                 to=self.all_surah[self.currently_on_surah_cb.get()]
             )
+
+    def update_pressed(self):
+        surah = self.currently_on_surah_cb.get()
+        verse = self.currently_on_verse_spinbox.get()
+        print(f"surah:{surah}  verse:{verse}")
+
+        with open("data/current.csv", mode="w") as file:
+            file.write(f"{surah},{verse}")
 
     def submit_pressed(self):
         page = self.page_spinbox.get()
@@ -135,8 +153,19 @@ class Tracking:
         update_endpoint = f"{PIXELA_ENDPOINT}/{USERNAME}/graphs/graph1/{date}"
 
         update_res = req.put(url=update_endpoint, headers=header, json=body)
-        update_res.raise_for_status()  # TODO Handle 503 Server Error
-        print(update_res.text)
+        try:
+            update_res.raise_for_status()  # TODO Handle 503 Server Error
+        except req.exceptions.HTTPError:
+            pass
+
+        # print(update_res.json()["isSuccess"])
+        # print(str(update_res.json()["isSuccess"]) == "False")
+
+        while str(update_res.json()["isSuccess"]) == "False":
+            update_res = req.put(url=update_endpoint, headers=header, json=body)
+            print(f"I am here{update_res.json()['isSuccess']}")
+
+        print(f"I am here{update_res.json()}")
 
         update_history()
         self.refresh_img()
