@@ -49,8 +49,9 @@ class Tracking:
             text="Sign Out",
             background=BACKGROUND_COLOR,
             activebackground=BACKGROUND_COLOR,
+            command=self.sign_out_pressed
         )
-        self.sign_out.grid(column=2, row=0, padx=30, sticky="e")
+        self.sign_out.grid(column=2, row=0, padx=30, sticky="e", columnspan=2)
 
         history_img = tk.PhotoImage(file="history.png")
         # self.canvas.create_image(20,20, image=history_img)
@@ -98,13 +99,15 @@ class Tracking:
         self.currently_on_surah_text.grid(column=3, row=2)
         self.currently_on_surah_cb.grid(column=4, row=2)
 
-
         self.var = tk.StringVar()
         self.currently_on_verse_text = tk.Label(
             text="On Verse:", background=BACKGROUND_COLOR
         )
-        self.currently_on_verse_spinbox = tk.Spinbox( textvariable=self.var,
-            from_=1, to=self.all_surah[self.currently_on_surah_cb.get()], width=3
+        self.currently_on_verse_spinbox = tk.Spinbox(
+            textvariable=self.var,
+            from_=1,
+            to=self.all_surah[self.currently_on_surah_cb.get()],
+            width=3,
         )
         self.var.set(current_verse)
         self.currently_on_verse_text.grid(column=3, row=3)
@@ -121,11 +124,11 @@ class Tracking:
         self.main_win.mainloop()
 
     def refresh_verse(self, event):
-        print(f"inside refresh verse:{self.before},{self.currently_on_surah_cb.get()}")
+        # print(f"inside refresh verse:{self.before},{self.currently_on_surah_cb.get()}")
         if self.before != self.currently_on_surah_cb.get():
-            print(
-                f"inside refresh verse ififif:{self.before},{self.currently_on_surah_cb.get()}"
-            )
+            # print(
+            #     f"inside refresh verse ififif:{self.before},{self.currently_on_surah_cb.get()}"
+            # )
             self.before = self.currently_on_surah_cb.get()
             self.currently_on_verse_spinbox.config(
                 to=self.all_surah[self.currently_on_surah_cb.get()]
@@ -134,7 +137,7 @@ class Tracking:
     def update_pressed(self):
         surah = self.currently_on_surah_cb.get()
         verse = self.currently_on_verse_spinbox.get()
-        print(f"surah:{surah}  verse:{verse}")
+        # print(f"surah:{surah}  verse:{verse}")
 
         with open("data/current.csv", mode="w") as file:
             file.write(f"{surah},{verse}")
@@ -146,7 +149,7 @@ class Tracking:
         header = {"X-USER-TOKEN": TOKEN}
 
         body = {"quantity": page}
-        print(body)
+        # print(body)
 
         # print(f"{date}")
 
@@ -163,9 +166,9 @@ class Tracking:
 
         while str(update_res.json()["isSuccess"]) == "False":
             update_res = req.put(url=update_endpoint, headers=header, json=body)
-            print(f"I am here{update_res.json()['isSuccess']}")
+        #     print(f"I am here{update_res.json()['isSuccess']}")
 
-        print(f"I am here{update_res.json()}")
+        # print(f"I am here{update_res.json()}")
 
         update_history()
         self.refresh_img()
@@ -174,6 +177,12 @@ class Tracking:
         global history_img
         history_img = tk.PhotoImage(file="history.png")
         self.img.config(image=history_img, background=BACKGROUND_COLOR)
+
+    def sign_out_pressed(self):
+        self.main_win.quit()
+        self.main_win.destroy()
+
+
 
 
 def update_history():

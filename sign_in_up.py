@@ -11,6 +11,7 @@ PIXELA_ENDPOINT = "https://pixe.la/v1/users"
 
 class SignInUp:
     def __init__(self) -> None:
+        self.signed_in = False
         self.sign_win = tk.Tk()
         self.sign_win.title("Sign In/Up")
         self.sign_win.config(padx=20, pady=20, background=BACKGROUND_COLOR)
@@ -86,6 +87,8 @@ class SignInUp:
                 env_file.writelines([f"USERNAME={username}", "\n", f"TOKEN={password}"])
 
             self.sign_win.quit()
+            self.sign_win.destroy()
+            self.signed_in = True
         else:
             # if res_message == f"User `{username}` does not exist or the token is wrong.":
             # print(f"User `{username}` does not exist or the token is wrong.")
@@ -136,7 +139,3 @@ class SignInUp:
 
         else:
             messagebox.showerror(title="Error!", message=res_message)
-
-
-a = SignInUp()
-# sadhfaskdiuasfhuwnfsajd
